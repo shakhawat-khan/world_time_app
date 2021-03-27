@@ -3,6 +3,8 @@ import 'package:http/http.dart' ;
 import 'dart:convert';
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
+import 'package:flutter_app_new/services/world_time.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Loading extends StatefulWidget {
   @override
@@ -11,33 +13,55 @@ class Loading extends StatefulWidget {
 
 class _LoadingState extends State<Loading> {
 
+  String time = 'loading';
 
-
-  void getData() async
+  void setupWorldTime() async
   {
 
-    Response response = await get('https://jsonplaceholder.typicode.com/todos/1');
-    Map data = jsonDecode(response.body);
+    WorldTime instance = WorldTime(location: 'Dhaka',flag: 'germany.png',url:'Asia/Dhaka');
+    await instance.getTime();
 
-    print(data);
+    Navigator.pushReplacementNamed(context, '/home',arguments: {
+      'location' : instance.location,
+      'flag' : instance.flag,
+      'time' : instance.time,
+      'isDaytime' : instance.isDaytime,
+    });
 
-    print(data['title']);
+    print(instance.time);
+
+    setState(() {
+      time = instance.time;
+    });
 
   }
+
+
+
 
   @override
   void initState() {
 
     super.initState();
 
-    getData();
+    setupWorldTime();
   }
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Text('this is loading screen'),
+
+      backgroundColor: Colors.blue[900]  ,
+
+      body: Center(
+
+        child: SpinKitCircle(
+          color: Colors.white,
+          size: 80.0,
+        ),
+
+      )
     );
   }
 }
